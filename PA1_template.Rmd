@@ -15,10 +15,10 @@ The data can be downloaded to the desired directory using the following R comman
  fileURL <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
  download.file(fileURL, destfile = "./Data/activity.zip")
  ```
-
+ 
 ### Reading the Data
  The function `read.csv()` is then used to read the data file and store it in the variable *activityData*
-```{r Reading, cache=TRUE}
+```{r Reading}
 activityData <- read.csv("./Data/activity.csv", stringsAsFactors = FALSE)
 ```
 
@@ -30,5 +30,14 @@ str(activityData)
 The class of the **date** variable is set as character. It would be more convenient to convert it to 
 a date class using `as.Date()` function as follows:
 ```{r}
-activityData$date <- as.Date(activityData$date, "%Y%m%d")
+activityData$date <- as.Date(activityData$date, "%Y-%m-%d")
+```
+## 2. Calculating the Mean Total Number of Steps Taken Per Day
+
+### Calculating the Total Steps Per Day
+In order to calculate the total steps per day, the variable *steps* has to be grouped by the variable *date* using the `group_by()`. To find the sum, `summarise()` function is used as shown. These function are available in the dplyr package.
+```{r Sum, warning=FALSE, message=FALSE}
+library(dplyr)
+totalSteps <- activityData %>% group_by(date) %>% summarise(Total.Steps = sum(steps, na.rm = TRUE))
+head(totalSteps)
 ```
