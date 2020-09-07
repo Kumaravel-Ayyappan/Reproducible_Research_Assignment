@@ -4,4 +4,19 @@ author: "Nathi"
 output: html_document
 ---
 The following data analysis will be carried out on data obtained from an individual's
-personal activity monitoring device. The data can be obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip)
+personal activity monitoring device. The data can be obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).  
+
+## Loading and Reading the Data
+### Downloading the Data
+The data can be downloaded to the desired directory using the following R commands:
+ ```{r Downloading, cache=TRUE}
+ if(!file.exists("./Data")){dir.create("./Data")}
+ fileURL <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+ download.file(fileURL, destfile = "./Data/activity.zip")
+ ```
+
+### Reading the Data
+ The function `read.csv()` is then used to read the data file and store it in the variable *activityData*
+```{r Reading, cache=TRUE}
+activityData <- read.csv("./Data/activity.csv", header = T)
+```
