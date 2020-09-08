@@ -28,9 +28,9 @@ str(activityData)
 ```
 
 The class of the **date** variable is set as character. It would be more convenient to convert it to 
-a date class using `as.Date()` function as follows:
+a date class using `as.POSIXct` function as follows:
 ```{r}
-activityData$date <- as.Date(activityData$date, "%Y-%m-%d")
+activityData$date <- as.POSIXct(activityData$date, "%Y-%m-%d")
 ```
 ## 2. Calculating the Mean Total Number of Steps Taken Per Day
 
@@ -41,3 +41,12 @@ library(dplyr)
 totalSteps <- activityData %>% group_by(date) %>% summarise(Total.Steps = sum(steps, na.rm = TRUE))
 head(totalSteps)
 ```
+
+### Creating a Histogram of Total Steps Per Day
+An histogram is a plot of the frequency of occurrence of certain values. 
+```{r plot}
+datefreq <- with(totalSteps, rep(date, Total.Steps))
+hist(datefreq, breaks = "day", freq = TRUE, col = "green", xlab = "Date",ylab = "Steps", main = "Steps per Day")
+```
+
+###
