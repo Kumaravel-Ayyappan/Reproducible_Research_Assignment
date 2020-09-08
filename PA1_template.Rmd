@@ -4,7 +4,7 @@ author: "Nathi"
 output: html_document
 ---
 The following data analysis will be carried out on data obtained from an individual's
-personal activity monitoring device. The data can be obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).  
+personal activity monitoring device. The data can be obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).      
 
 ## **1. Loading and Reading the Data**
 
@@ -32,7 +32,7 @@ a date class using `as.POSIXct` function as follows:
 ```{r}
 activityData$date <- as.POSIXct(activityData$date, "%Y-%m-%d")
 ```  
-
+    
 ## **2. Calculating the Mean Total Number of Steps Taken Per Day**
 
 ### Calculating the Total Steps Per Day
@@ -60,6 +60,7 @@ The median value can be calculated using the `median()` function.
 ```{r median}
 median(totalSteps$Total.Steps, na.rm = TRUE)
 ```
+    
 ## **3. Average Daily Activity  Pattern**
 Here we group the data with respect to the measurement intervals, calculate the mean steps for each interval and then use the results to plot a line graph.
 ```{r, warning=FALSE, message=FALSE}
@@ -84,4 +85,36 @@ intervalSteps <- arrange(intervalSteps, desc(Avg))
 maxInterval <- intervalSteps$interval[1]
 print(maxInterval)
 ```
-The maximum average step of **`r maxStep`** occurs at an interval of **`r maxInterval`**.
+The maximum average step of **`r maxStep`** occurs at an interval of **`r maxInterval`**.    
+
+## **4. Imputing Missing Values**  
+### Calculating Number of NA Obseravtion
+First, the total number of NAs are calculated.
+```{r NaCount}
+totalNA <- sum(is.na(activityData$steps))
+print(totalNA)
+```
+We can see that there is a total of `r totalNA` NAs present in our data set.
+
+### Imputing NAs with Interval Mean
+Missing values can be taken into account by replacing each occurrence of NA with the mean of the respective intervals. To do so, first we merge the original data frame and the data frame containing the averages of each interval.
+```{r}
+combined <- merge(activityData, intervalSteps, by = "interval", sort = FALSE)
+```
+  
+Then we duplicate the the *steps* column under the variable *new* (this is done just as a precautionary measure to prevent any corruption of the original data) and replace all occurrences of NA with the *Avg* value.
+```{r duplicateVar} 
+combined$new <- combined$steps
+combined$new[is.na(combined$new)] <- combined$Avg[is.na(combined$new)]
+newActivityData <- combined
+```
+
+### Creating a Histogram with New Data
+The steps shown in (1) can be repeated with the new data set to obatain a new histogram (shown below).
+```{r warning=FALSE, message=FALSE, echo = FALSE}
+newTotalSteps <- newActivityData %>% group_by(date) %>% summarise(Total.Steps = sum(new))
+newDatefreq <- with(newTotalSteps, rep(date, Total.Steps))
+hist(newDatefreq, breaks = "day", freq = TRUE, col = "mistyrose4", xlab = "Date",ylab = "Steps", main = "Steps per Day", format = "%d/%m")
+```
+
+The 
