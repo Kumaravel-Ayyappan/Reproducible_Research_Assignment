@@ -61,5 +61,27 @@ The median value can be calculated using the `median()` function.
 median(totalSteps$Total.Steps, na.rm = TRUE)
 ```
 ## **3. Average Daily Activity  Pattern**
+Here we group the data with respect to the measurement intervals, calculate the mean steps for each interval and then use the results to plot a line graph.
+```{r, warning=FALSE, message=FALSE}
+intervalSteps <- activityData %>% group_by(interval) %>% summarise(Avg = mean(steps, na.rm = TRUE))
+```
+As the interval is not given in seconds but given in a format combining hours and minutes, we will have to add a new variable which reflects the change in interval more accurately.
+```{r time}
+intervalSteps$hours <- intervalSteps$interval %/% 100
+intervalSteps$mins <- intervalSteps$interval %% 100
+intervalSteps$time <- with(intervalSteps, paste(hours, ":", mins, sep = ""))
+intervalSteps$time <- as.POSIXct(intervalSteps$time, format = "%H:%M")
+```
+Finally, the plot!
+```{r}
+with(intervalSteps, plot(time, Avg, type = "l", col = "blue", xlab = "Time", ylab = "Steps", main = "Average Daily Activity Pattern"))
+```
 
-
+By arranging the data set in descending order of average steps and taking the first value of the variable interval, we get the interval at which the maximum average step occurs.
+```{r maxStep}
+maxStep <- max(intervalSteps$Avg)
+intervalSteps <- arrange(intervalSteps, desc(Avg))
+maxInterval <- intervalSteps$interval[1]
+print(maxInterval)
+```
+The maximum average step of **`r maxStep`** occurs at an interval of **`r maxInterval`**.
