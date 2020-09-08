@@ -51,4 +51,15 @@ datefreq <- with(totalSteps, rep(date, Total.Steps))
 hist(datefreq, breaks = "day", freq = TRUE, col = "skyblue", xlab = "Date",ylab = "Steps", main = "Steps per Day", format = "%d/%m")
 ```
 
-### Calculating Mean and Median Steps for Each Day
+### Calculating Mean and Median of the Total Steps per Day
+The mean value can be calculated using `mean()` function.
+```{r mean}
+mean(totalSteps$Total.Steps, na.rm = TRUE)
+```
+The median value can be calculated using the `median()` function.
+```{r median}
+median(totalSteps$Total.Steps, na.rm = TRUE)
+```
+## **3. Average Daily Activity  Pattern**
+
+
