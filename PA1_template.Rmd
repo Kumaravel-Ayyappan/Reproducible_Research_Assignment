@@ -117,4 +117,7 @@ newDatefreq <- with(newTotalSteps, rep(date, Total.Steps))
 hist(newDatefreq, breaks = "day", freq = TRUE, col = "mistyrose4", xlab = "Date",ylab = "Steps", main = "Steps per Day", format = "%d/%m")
 ```
 
-The 
+```{r}
+mean(newTotalSteps$Total.Steps)
+median(newTotalSteps$Total.Steps)
+```
