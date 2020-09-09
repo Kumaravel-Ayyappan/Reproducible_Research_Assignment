@@ -103,21 +103,55 @@ combined <- merge(activityData, intervalSteps, by = "interval", sort = FALSE)
 ```
   
 Then we duplicate the the *steps* column under the variable *new* (this is done just as a precautionary measure to prevent any corruption of the original data) and replace all occurrences of NA with the *Avg* value.
-```{r duplicateVar} 
+```{r duplicateVar, message=FALSE} 
+library(dplyr)
 combined$new <- combined$steps
 combined$new[is.na(combined$new)] <- combined$Avg[is.na(combined$new)]
-newActivityData <- combined
+newActivityData <- select(combined, -c(steps, Avg), "Steps" = new)
 ```
 
 ### Creating a Histogram with New Data
-The steps shown in (1) can be repeated with the new data set to obatain a new histogram (shown below).
-```{r warning=FALSE, message=FALSE, echo = FALSE}
-newTotalSteps <- newActivityData %>% group_by(date) %>% summarise(Total.Steps = sum(new))
+The steps shown in (1) can be repeated with the new data set to obtain a new histogram (shown below).
+```{r warning=FALSE, message=FALSE}
+newTotalSteps <- newActivityData %>% group_by(date) %>% summarise(Total.Steps = sum(Steps))
 newDatefreq <- with(newTotalSteps, rep(date, Total.Steps))
-hist(newDatefreq, breaks = "day", freq = TRUE, col = "mistyrose4", xlab = "Date",ylab = "Steps", main = "Steps per Day", format = "%d/%m")
+hist(newDatefreq, breaks = "day", freq = TRUE, col = "skyblue",xlab = "Date",ylab = "Steps",
+     main = "Steps per Day",format = "%d/%m")
 ```
 
+The new mean and median values are as follows:
 ```{r}
 mean(newTotalSteps$Total.Steps)
 median(newTotalSteps$Total.Steps)
 ```
+The mean and median values have increased.
+  
+## **5.Comparing Activity Pattern Between Weekdays Weekends**
+In this section, we will be comparing the activity patterns obtained from weekdays and weekends. To do so we create a new variable *days* using the `weekdays()` function and assign a separate factor for weekdays and weekends.
+```{r factor}
+newActivityData$date <- as.Date(newActivityData$date, format = "%Y-%m-%d")
+newActivityData$days <- weekdays(newActivityData$date)
+weekends <- grepl("Saturday|Sunday", newActivityData$days)
+newActivityData$factor <- rep("weekday", nrow(newActivityData))
+newActivityData$factor[weekends] <- "weekend"
+newActivityData$factor <- as.factor(newActivityData$factor)
+```
+Before plotting we have to convert the interval values to a continuous form. The steps are similar to that done in (3).
+```{r message=FALSE}
+newActivityData <- group_by(newActivityData, factor, interval)
+averageSteps <- summarise(newActivityData, average = mean(Steps))
+averageSteps$hours <- averageSteps$interval %/% 100
+averageSteps$mins <- averageSteps$interval %% 100
+averageSteps$time <- with(averageSteps, paste(hours, ":", mins, sep = ""))
+averageSteps$time <- as.POSIXct(averageSteps$time, format = "%H:%M")
+```
+Now we plot!
+```{r finalPlot}
+library(ggplot2)
+a <- ggplot(averageSteps, aes(time, log10(average))) + geom_line() +
+              facet_grid(factor~.) +
+              labs(x = "Interval", y = "Number of Steps", title = "Weekday and Weekend Activity Pattern")
+print(a)
+```
+
+  
