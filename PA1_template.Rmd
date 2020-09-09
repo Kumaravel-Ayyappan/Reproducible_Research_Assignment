@@ -1,7 +1,9 @@
 ---
 title: "Activity Monitoring"
 author: "Nathi"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 The following data analysis will be carried out on data obtained from an individual's
 personal activity monitoring device. The data can be obtained [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).      
@@ -46,7 +48,7 @@ head(totalSteps)
 ### Creating a Histogram of Total Steps Per Day
 An histogram is a plot of the frequency of occurrence of certain values. In order to plot the number of steps taken per day, we will first create a vector of dates whereby the number of occurrence of each date corresponds to the number of steps taken. This is achieved by using `rep()` function.  
 Once this is done, a histogram is made using `hist()` function as follows.
-```{r plot}
+```{r histogram1}
 datefreq <- with(totalSteps, rep(date, Total.Steps))
 hist(datefreq, breaks = "day", freq = TRUE, col = "skyblue", xlab = "Date",ylab = "Steps", main = "Steps per Day", format = "%d/%m")
 ```
@@ -74,7 +76,7 @@ intervalSteps$time <- with(intervalSteps, paste(hours, ":", mins, sep = ""))
 intervalSteps$time <- as.POSIXct(intervalSteps$time, format = "%H:%M")
 ```
 Finally, the plot!
-```{r}
+```{r lineplot1}
 with(intervalSteps, plot(time, Avg, type = "l", col = "blue", xlab = "Time", ylab = "Steps", main = "Average Daily Activity Pattern"))
 ```
 
@@ -112,7 +114,7 @@ newActivityData <- select(combined, -c(steps, Avg), "Steps" = new)
 
 ### Creating a Histogram with New Data
 The steps shown in (1) can be repeated with the new data set to obtain a new histogram (shown below).
-```{r warning=FALSE, message=FALSE}
+```{r histogram2, warning=FALSE, message=FALSE}
 newTotalSteps <- newActivityData %>% group_by(date) %>% summarise(Total.Steps = sum(Steps))
 newDatefreq <- with(newTotalSteps, rep(date, Total.Steps))
 hist(newDatefreq, breaks = "day", freq = TRUE, col = "skyblue",xlab = "Date",ylab = "Steps",
