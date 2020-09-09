@@ -126,17 +126,17 @@ median(newTotalSteps$Total.Steps)
 ```
 The mean and median values have increased.
   
-## **5.Comparing Activity Pattern Between Weekdays Weekends**
+## **5.Comparing Activity Pattern Between Weekdays and Weekends**
 In this section, we will be comparing the activity patterns obtained from weekdays and weekends. To do so we create a new variable *days* using the `weekdays()` function and assign a separate factor for weekdays and weekends.
 ```{r factor}
 newActivityData$date <- as.Date(newActivityData$date, format = "%Y-%m-%d")
 newActivityData$days <- weekdays(newActivityData$date)
 weekends <- grepl("Saturday|Sunday", newActivityData$days)
-newActivityData$factor <- rep("weekday", nrow(newActivityData))
-newActivityData$factor[weekends] <- "weekend"
+newActivityData$factor <- rep("Weekday", nrow(newActivityData))
+newActivityData$factor[weekends] <- "Weekend"
 newActivityData$factor <- as.factor(newActivityData$factor)
 ```
-Before plotting we have to convert the interval values to a continuous form. The steps are similar to that done in (3).
+Before plotting we have to convert the interval values to a continuous form. The steps are similar to that in (3)
 ```{r message=FALSE}
 newActivityData <- group_by(newActivityData, factor, interval)
 averageSteps <- summarise(newActivityData, average = mean(Steps))
@@ -149,8 +149,9 @@ Now we plot!
 ```{r finalPlot}
 library(ggplot2)
 a <- ggplot(averageSteps, aes(time, log10(average))) + geom_line() +
-              facet_grid(factor~.) +
-              labs(x = "Interval", y = "Number of Steps", title = "Weekday and Weekend Activity Pattern")
+  facet_grid(factor~.) +
+  labs(x = "Interval", y = "Number of Steps") +
+  ggtitle("Weekday and Weekend Activity Pattern")
 print(a)
 ```
 
